@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{parent()}} - Dashboard{% endblock %}
+
+{% block body %}
+{{parent()}}
+<div class="container mt-3">
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endfor %}
+    
+    <div class="row p-3">
+        <a class="" href="{{path('registerProduct')}}">
+            <button class="btn btn-outline-primary">Agregar nuevo registro</button>
+        </a>
+    </div>
+
+    <h2>
+        <div class="count">Productos ({{ pagination.getTotalItemCount }})</div>
+    </h2>
+
+    <table class="table table-hover table-striped table-sm border">
+        <tr>
+            {# sorting of properties based on query components #}
+            <th>Accion</th>
+            <th>{{ knp_pagination_sortable(pagination, 'Id', 'a.id') }}</th>
+            <th{% if pagination.isSorted('a.Title') %} class="sorted"{% endif %}>
+                {{ knp_pagination_sortable(pagination, 'Code', 'a.title') }}
+            </th>
+            <th{% if pagination.isSorted(['a.date', 'a.time']) %} class="sorted"{% endif %}>
+                {{ knp_pagination_sortable(pagination, 'name', ['a.date', 'a.time']) }}
+            </th>
+            <th{% if pagination.isSorted(['a.date', 'a.time']) %} class="sorted"{% endif %}>
+                {{ knp_pagination_sortable(pagination, 'Description', ['a.date', 'a.time']) }}
+            </th>
+            <th{% if pagination.isSorted(['a.date', 'a.time']) %} class="sorted"{% endif %}>
+                {{ knp_pagination_sortable(pagination, 'Brand', ['a.date', 'a.time']) }}
+            </th>
+            <th{% if pagination.isSorted(['a.date', 'a.time']) %} class="sorted"{% endif %}>
+                {{ knp_pagination_sortable(pagination, 'Price', ['a.date', 'a.time']) }}
+            </th>
+        </tr>
+
+        {# table body #}
+        {% for article in pagination %}
+            <tr {% if loop.index is odd %}class="color"{% endif %}>
+                <td>
+                    <div class="dropdown show">
+                        <a class="btn btn-primary btn-sm dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Accion</a>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <a class="dropdown-item" href="#">Editar</a>
+                            <a class="dropdown-item" onclick="deleteItem( {{ article.id }}, 'Product' )">Eliminar</a>
+                        </div>
+                    </div>
+                </td>
+                <td>{{ article.id }}</td>
+                <td>{{ article.code }}</td>
+                <td>{{ article.name }}</td>
+                <td>{{ article.description }}</td>
+                <td>{{ article.brand }}</td>
+                <td>{{ article.price }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    {# display navigation #}
+    <div class="navigation">
+        {{ knp_pagination_render(pagination) }}
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/fosjsrouting/js/router.min.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
+    <script src="{{ asset('js/ajax-call.js') }}"></script>
+{% endblock %}
